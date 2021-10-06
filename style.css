@@ -9,6 +9,12 @@ body, html{
     display: flex;
     align-items: center;
     justify-content: center;
+    /* disable user select on all text*/
+        user-select: none; /* supported by Chrome and Opera */
+       -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+       -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
 .calculator{
@@ -21,6 +27,7 @@ body, html{
     padding: 40px;
     align-items: center;
     border-radius: 12px;
+    cursor: pointer;
 }
 
 .screen{
@@ -103,3 +110,28 @@ span {
     color: white;
     font-size: 46px;
 }
+
+.number:hover{
+    background-color: #4B8897;
+}
+
+.number:active{
+    background-color: #16697A;
+}
+
+.operator:hover{
+    background-color: #174D58;
+}
+
+.operator:active{
+   background-color: #113036;
+}
+.primary-button:hover{
+    background-color: #F29C24;
+}
+
+.primary-button:active{
+    background-color: #D68310;
+}
+
+

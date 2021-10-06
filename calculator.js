@@ -92,9 +92,13 @@ function undoLastAction () {
 
 
 function inputValue(x){
-    if (nextInputIsValueB === false) {
-        //broken here    
+    if (nextInputIsValueB === false) { 
         if (total===0) {
+                    //2nd contdition does not work properly
+                    // I think we need a valueA and a valueB
+                    //if it's the first cycle, we use total and ValueB
+                    //if it's the 2nd cycle, we get inputs for valueA
+                        //doesn't make sense - we should just be inputting valueB
             total = x;
         }
         else {
@@ -116,7 +120,6 @@ function inputValue(x){
 function inputOperator (y) {
     if (valueB !== 0) {
         calculateNewTotal();
-        nextInputIsValueB = false;
     }
     else {
     nextInputIsValueB = true; 
@@ -144,38 +147,34 @@ function calculateNewTotal() {
     }
     screenResults.textContent = total;
     nextInputIsValueB = true;
+    valueB = 0;
 }
 
 //calculate functions
 
 function calculateDivide(){
-    total = (total / valueB);
+    total = (parseInt(total) / parseInt(valueB));
 }
 
 function calculateMultiply(){
-    total = (total * valueB);
+    total = (parseInt(total) * parseInt(valueB));
 }
 
 function calculateMinus(){
-    total = (total - valueB);
+    total = (parseInt(total) - parseInt(valueB));
 }
 
 function calculatePlus(){
-    total = (total + valueB);
+    total = (parseInt(total) + parseInt(valueB));
 }
 
 
 
-
-
-//create a variable (valueA or total) which stores the first numberButton pressed
-//create a variable (valueB) which stores the second numberButton pressed
-//create a variable (operator) which stores the operator pressed
-
-//some sort of switch
-    //if operator has been pressed: active
-        //if number is pressed
-            //if value B !== 0, return calculation
-            //if value B === 0, += valueB
-    //if number is pressed: inactive
-        //if number is pressed, += number to valueA/valueB
+//Need to resolve:
+//You should round answers with long decimals so that they don’t overflow the screen.
+//Pressing = before entering all of the numbers or an operator could cause problems!
+//Display a snarky error message if the user tries to divide by 0… don’t let it crash your calculator!
+//Backspace button
+//EXTRA CREDIT: Users can get floating point numbers if they do the math required to get one, but they can’t type them in yet. Add a . button and let users input decimals! Make sure you don’t let them type more than one though: 12.3.56.5. It is hard to do math on these numbers. (disable the decimal button if there’s already one in the display)
+//add keyboard supports
+//add commas

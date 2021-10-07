@@ -36,6 +36,38 @@ let valueB = 0;
 let operator = "";
 let nextInputIsValueB = false;
 
+//Event listener for keypad
+document.addEventListener('keydown', logKey);
+
+function logKey(e) {
+    keyInput = e.key;
+  if ((keyInput <=9 && keyInput >=0)){
+    inputValue(keyInput);
+  }
+  else if (keyInput == ".") {
+      inputDecimal();
+  }
+  else if (keyInput == "/") {
+    inputOperator("/");
+  }
+  else if (keyInput == "*" || keyInput == "x") {
+    inputOperator("x");
+  }
+  else if (keyInput == "-") {
+    inputOperator("-");
+  }
+  else if (keyInput == "+" || keyInput == "Enter") {
+    inputOperator("+");
+  }
+  else if (keyInput == "=") {
+    calculateNewTotal();
+  }
+  else if (keyInput == "Backspace" || keyInput == "Delete") {
+    undoLastAction();
+  }
+  else return;
+}
+
 //Event listeners for numbers
 button0.addEventListener('click', function(){
     inputValue(0)})
@@ -58,7 +90,7 @@ button8.addEventListener('click', function(){
 button9.addEventListener('click', function(){
     inputValue(9)})
 buttonDecimal.addEventListener('click', function(){
-        inputValue(".")})
+        inputDecimal()})
 
 //Event listeners for operators
 buttonDivide.addEventListener('click', function(){
@@ -87,16 +119,30 @@ function clearScreen () {
 }
 
 
-
+function inputDecimal(){
+    total = total.toLocaleString('fullwide', {useGrouping:false});
+    valueB = valueB.toLocaleString('fullwide', {useGrouping:false});
+    if (nextInputIsValueB === true)  {
+        if (valueB.includes(".")) {
+            return;
+        }
+        else {
+            inputValue(".");
+        }
+    }
+    else {
+        if (total.includes(".")) {
+            return;
+        }
+        else {
+            inputValue(".");
+        }
+    }
+}
 
 function inputValue(x){
     if (nextInputIsValueB === false) { 
         if (total===0) {
-                    //2nd contdition does not work properly
-                    // I think we need a valueA and a valueB
-                    //if it's the first cycle, we use total and ValueB
-                    //if it's the 2nd cycle, we get inputs for valueA
-                        //doesn't make sense - we should just be inputting valueB
             total = x;
         }
         else {
@@ -127,11 +173,10 @@ function inputOperator (y) {
 };
 
 function calculateNewTotal() {
-    if (operator === "/" && (parseInt(valueB) ===0)){
+    if (operator === "/" && (parseFloat(valueB) ===0)){
         screenResults.textContent = "Error";
         screenEquation.textContent = "You can't divide by zero - not even here.";
-    }
-    else if (valueB !==0) {
+    } else if (valueB !==0) {
         screenEquation.textContent = displayValue(total) + " " + operator + " " + displayValue(valueB) + " =";
         if (operator === "/"){
             calculateDivide();
@@ -151,6 +196,10 @@ function calculateNewTotal() {
         screenResults.textContent = displayValue(total);
         nextInputIsValueB = true;
         valueB = 0;
+} else if (valueB === 0) {
+    operator = "";
+    screenResults.textContent = displayValue(total);
+    screenEquation.textContent = displayValue(total);
 }
 else return false;
 }
@@ -159,46 +208,75 @@ else return false;
 //calculate functions
 
 function calculateDivide(){
-    total = (parseInt(total) / parseInt(valueB));
+    total = (parseFloat(total) / parseFloat(valueB));
 }
 
 function calculateMultiply(){
-    total = (parseInt(total) * parseInt(valueB));
+    total = (parseFloat(total) * parseFloat(valueB));
 }
 
 function calculateMinus(){
-    total = (parseInt(total) - parseInt(valueB));
+    total = (parseFloat(total) - parseFloat(valueB));
 }
 
 function calculatePlus(){
-    total = (parseInt(total) + parseInt(valueB));
+    total = (parseFloat(total) + parseFloat(valueB));
 }
 
 //return a max of 15 value with commas
 function displayValue (value){
     valueString = (value).toLocaleString('fullwide', {useGrouping:false});
-    valueTruncated= valueString.slice(0, 12);
-    valueTruncatedLength = valueTruncated.length;
-    if (valueTruncatedLength<=3 ) {
-        valuetoDisplay = valueTruncated;
+    valueTruncated= valueString.slice(0, 12)
+    valuePostDecimal = "";
+    if (valueString.includes(".")){
+        splitString = valueString.split(".");
+        valueTruncated = splitString[0];
+        valuePostDecimal = "." + splitString[1];
     }
-    else if (valueTruncatedLength <=6) {
-        valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength);
+        valueTruncatedLength = valueTruncated.length;
+        if (valueTruncatedLength<=3 ) {
+            valuetoDisplay = valueTruncated + valuePostDecimal;
+        }
+        else if (valueTruncatedLength <=6) {
+            valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength) + valuePostDecimal;
+        }
+        else if(valueTruncatedLength<=9) {
+            valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-6) + "," + valueTruncated.slice(valueTruncatedLength-6, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength) + valuePostDecimal;
+        }
+        else {
+        valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-9) + "," + valueTruncated.slice(-9, valueTruncatedLength-6) + "," + valueTruncated.slice(valueTruncatedLength-6, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength) + valuePostDecimal;   
+        }
+        return valuetoDisplay.slice(0, 12);
     }
-    else if(valueTruncatedLength<=9) {
-        valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-6) + "," + valueTruncated.slice(valueTruncatedLength-6, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength);
-    }
-    else {
-    valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-9) + "," + valueTruncated.slice(-9, valueTruncatedLength-6) + "," + valueTruncated.slice(valueTruncatedLength-6, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength);   
-    }
-    return valuetoDisplay;
     //valueWithCommas = valueString.slice();
     //return valueToDisplay;
-}
 
 //backspace button
 function undoLastAction () {
-    //if editing Total
+    if (nextInputIsValueB === false) {
+        undoLastActionTotal();
+    }
+    else {undoLastActionValueB();}
+    }
+
+
+function undoLastActionValueB(){
+    let value = "";
+    value = valueB;
+    valueString = displayValue(value);
+    valueLength = valueString.length;
+    valueShortened = valueString.slice(0,valueLength-1).replace(",","");
+    valueShortened = valueShortened.slice(0,valueLength-1).replace(",","");
+    valueShortened = valueShortened.slice(0,valueLength-1).replace(",","");
+    valueB = valueShortened;
+    screenResults.textContent = displayValue(valueShortened);
+    if (valueB == "" || valueB === 0) {  
+        valueB = 0;
+        screenResults.textContent = valueB;
+    }}
+
+function undoLastActionTotal (){
+    let value = "";
     value = total;
     valueString = displayValue(value);
     valueLength = valueString.length;
@@ -207,15 +285,12 @@ function undoLastAction () {
     valueShortened = valueShortened.slice(0,valueLength-1).replace(",","");
     total = valueShortened;
     screenResults.textContent = displayValue(valueShortened);
-    if (total === "") {
+    if (total == "" || total === 0) {  
         total = 0;
         screenResults.textContent = total;
-    }
+    }}
     //NEED IF STATEMENT FOR IF EDITING VALUEb
-}
 
 //Need to resolve:
-//Backspace button
-//EXTRA CREDIT: Users can get floating point numbers if they do the math required to get one, but they can’t type them in yet. Add a . button and let users input decimals! Make sure you don’t let them type more than one though: 12.3.56.5. It is hard to do math on these numbers. (disable the decimal button if there’s already one in the display)
 //add keyboard supports
 //add commas

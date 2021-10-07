@@ -86,9 +86,7 @@ function clearScreen () {
     screenEquation.textContent = "";
 }
 
-function undoLastAction () {
-    return true;
-}
+
 
 
 function inputValue(x){
@@ -104,7 +102,7 @@ function inputValue(x){
         else {
         total += ""+x;
         }
-        screenResults.textContent = total;
+        screenResults.textContent = displayValue(total);
     }
     else {
         if (valueB===0) {
@@ -113,7 +111,7 @@ function inputValue(x){
         else {
         valueB += ""+x;
         }
-        screenResults.textContent = valueB;  
+        screenResults.textContent = displayValue(valueB);  
     }
 };
 
@@ -125,30 +123,38 @@ function inputOperator (y) {
     nextInputIsValueB = true; 
     }
     operator = y;
-    screenEquation.textContent = total + " " + y;   
+    screenEquation.textContent = displayValue(total) + " " + y;   
 };
 
 function calculateNewTotal() {
-    screenEquation.textContent = total + " " + operator + " " + valueB + " =";
-    if (operator === "/"){
-        calculateDivide();
+    if (operator === "/" && (parseInt(valueB) ===0)){
+        screenResults.textContent = "Error";
+        screenEquation.textContent = "You can't divide by zero - not even here.";
     }
-    else if (operator === "x") {
-        calculateMultiply();
-    }
-    else if (operator === "-") {
-        calculateMinus();
-    }
-    else if (operator === "+") {
-        calculatePlus();
-    }
-    else {
-        screenResults.textContent = "Oops..."
-    }
-    screenResults.textContent = total;
-    nextInputIsValueB = true;
-    valueB = 0;
+    else if (valueB !==0) {
+        screenEquation.textContent = displayValue(total) + " " + operator + " " + displayValue(valueB) + " =";
+        if (operator === "/"){
+            calculateDivide();
+        }
+        else if (operator === "x") {
+            calculateMultiply();
+        }
+        else if (operator === "-") {
+            calculateMinus();
+        }
+        else if (operator === "+") {
+            calculatePlus();
+        }
+        else {
+            screenResults.textContent = "Oops..."
+        }
+        screenResults.textContent = displayValue(total);
+        nextInputIsValueB = true;
+        valueB = 0;
 }
+else return false;
+}
+
 
 //calculate functions
 
@@ -168,12 +174,47 @@ function calculatePlus(){
     total = (parseInt(total) + parseInt(valueB));
 }
 
+//return a max of 15 value with commas
+function displayValue (value){
+    valueString = (value).toLocaleString('fullwide', {useGrouping:false});
+    valueTruncated= valueString.slice(0, 12);
+    valueTruncatedLength = valueTruncated.length;
+    if (valueTruncatedLength<=3 ) {
+        valuetoDisplay = valueTruncated;
+    }
+    else if (valueTruncatedLength <=6) {
+        valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength);
+    }
+    else if(valueTruncatedLength<=9) {
+        valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-6) + "," + valueTruncated.slice(valueTruncatedLength-6, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength);
+    }
+    else {
+    valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-9) + "," + valueTruncated.slice(-9, valueTruncatedLength-6) + "," + valueTruncated.slice(valueTruncatedLength-6, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength);   
+    }
+    return valuetoDisplay;
+    //valueWithCommas = valueString.slice();
+    //return valueToDisplay;
+}
 
+//backspace button
+function undoLastAction () {
+    //if editing Total
+    value = total;
+    valueString = displayValue(value);
+    valueLength = valueString.length;
+    valueShortened = valueString.slice(0,valueLength-1).replace(",","");
+    valueShortened = valueShortened.slice(0,valueLength-1).replace(",","");
+    valueShortened = valueShortened.slice(0,valueLength-1).replace(",","");
+    total = valueShortened;
+    screenResults.textContent = displayValue(valueShortened);
+    if (total === "") {
+        total = 0;
+        screenResults.textContent = total;
+    }
+    //NEED IF STATEMENT FOR IF EDITING VALUEb
+}
 
 //Need to resolve:
-//You should round answers with long decimals so that they don’t overflow the screen.
-//Pressing = before entering all of the numbers or an operator could cause problems!
-//Display a snarky error message if the user tries to divide by 0… don’t let it crash your calculator!
 //Backspace button
 //EXTRA CREDIT: Users can get floating point numbers if they do the math required to get one, but they can’t type them in yet. Add a . button and let users input decimals! Make sure you don’t let them type more than one though: 12.3.56.5. It is hard to do math on these numbers. (disable the decimal button if there’s already one in the display)
 //add keyboard supports

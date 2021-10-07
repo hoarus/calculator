@@ -246,7 +246,7 @@ function displayValue (value){
         else {
         valuetoDisplay = valueTruncated.slice(0, valueTruncatedLength-9) + "," + valueTruncated.slice(-9, valueTruncatedLength-6) + "," + valueTruncated.slice(valueTruncatedLength-6, valueTruncatedLength-3) + "," + valueTruncated.slice(valueTruncatedLength-3, valueTruncatedLength) + valuePostDecimal;   
         }
-        return valuetoDisplay.slice(0, 12);
+        return valuetoDisplay.slice(0, 15);
     }
     //valueWithCommas = valueString.slice();
     //return valueToDisplay;
